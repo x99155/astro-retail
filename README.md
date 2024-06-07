@@ -1,48 +1,57 @@
-Overview
+Description
 ========
 
-Welcome to Astronomer! This project was generated after you ran 'astro dev init' using the Astronomer CLI. This readme describes the contents of the project, as well as how to run Apache Airflow on your local machine.
+Ce projet a été généré en utilisant la CLI astro.
 
-Project Contents
+Astro est une solution cloud qui vous aide à vous concentrer sur vos pipelines de données et à passer moins de temps à gérer Apache Airflow, avec des fonctionnalités vous permettant de créer, d'exécuter et d'observer des données en un seul endroit.
+
+Pour plus d'informations consultez la docs [ici](https://docs.astronomer.io/learn/get-started-with-airflow)
+
+Pré-requis
+- CLI Astro
+- Docker
+- IDE
+- Compte Google Cloud Platform
+
+
+Description du projet
 ================
 
-Your Astro project contains the following files and folders:
+Nous créons un DAG qui exécute les étapes nécessaires pour transférer un fichier CSV local vers BigQuery en utilisant Google Cloud Storage comme intermédiaire.
 
-- dags: This folder contains the Python files for your Airflow DAGs. By default, this directory includes one example DAG:
-    - `example_astronauts`: This DAG shows a simple ETL pipeline example that queries the list of astronauts currently in space from the Open Notify API and prints a statement for each astronaut. The DAG uses the TaskFlow API to define tasks in Python, and dynamic task mapping to dynamically print a statement for each astronaut. For more on how this DAG works, see our [Getting started tutorial](https://docs.astronomer.io/learn/get-started-with-airflow).
-- Dockerfile: This file contains a versioned Astro Runtime Docker image that provides a differentiated Airflow experience. If you want to execute other commands or overrides at runtime, specify them here.
-- include: This folder contains any additional files that you want to include as part of your project. It is empty by default.
-- packages.txt: Install OS-level packages needed for your project by adding them to this file. It is empty by default.
-- requirements.txt: Install Python packages needed for your project by adding them to this file. It is empty by default.
-- plugins: Add custom or community plugins for your project to this file. It is empty by default.
-- airflow_settings.yaml: Use this local-only file to specify Airflow Connections, Variables, and Pools instead of entering them in the Airflow UI as you develop DAGs in this project.
+1. Import des bibliothèques et configuration du DAG :
 
-Deploy Your Project Locally
+- Importation des opérateurs nécessaires.
+- Définition des paramètres par défaut du DAG et des chemins/noms utilisés dans les tâches.
+
+2. Définition des tâches :
+
+upload_csv_to_gcp : Transfère le fichier CSV local vers le bucket GCS spécifié.
+create_retail_dataset : Crée un dataset vide dans BigQuery.
+gcs_to_bigquery : Importe le fichier CSV de GCS vers une table BigQuery.
+
+3. Définition de l'ordre des tâches :
+
+- Les tâches sont organisées dans l'ordre correct en utilisant l'opérateur >>
+
+
+Utilisation
 ===========================
 
-1. Start Airflow on your local machine by running 'astro dev start'.
+1. Générez un nouveau projet avec la commande `astro dev init`
 
-This command will spin up 4 Docker containers on your machine, each for a different Airflow component:
+2. Démarrez airflow sur votre machine local avec la commande `astro dev start`
 
-- Postgres: Airflow's Metadata Database
-- Webserver: The Airflow component responsible for rendering the Airflow UI
-- Scheduler: The Airflow component responsible for monitoring and triggering tasks
-- Triggerer: The Airflow component responsible for triggering deferred tasks
+Cette commande fera tourner 4 conteneurs Docker sur votre machine, chacun pour un composant Airflow différent :
 
-2. Verify that all 4 Docker containers were created by running 'docker ps'.
+- Postgres : base de données de métadonnées d'Airflow
+- Serveur Web : le composant Airflow responsable du rendu de l'interface utilisateur Airflow
+- Scheduler : Le composant Airflow chargé de surveiller et de déclencher les tâches
+- Triggerer : Le composant Airflow chargé de déclencher les tâches différées
 
-Note: Running 'astro dev start' will start your project with the Airflow Webserver exposed at port 8080 and Postgres exposed at port 5432. If you already have either of those ports allocated, you can either [stop your existing Docker containers or change the port](https://docs.astronomer.io/astro/test-and-troubleshoot-locally#ports-are-not-available).
+Vérifiez que les 4 conteneurs Docker ont été créés en exécutant `docker ps`.
 
-3. Access the Airflow UI for your local Airflow project. To do so, go to http://localhost:8080/ and log in with 'admin' for both your Username and Password.
+NB: L'exécution de `astro dev start` démarrera votre projet avec le serveur Web Airflow exposé sur le port 8080 et Postgres exposé sur le port 5432. Si l'un de ces ports est déjà alloué, vous pouvez [soit arreter les conteneurs existants, soit changer de port](https://docs.astronomer.io/astro/test-and-troubleshoot-locally#ports-are-not-available).
 
-You should also be able to access your Postgres Database at 'localhost:5432/postgres'.
+Accédez à l'interface utilisateur Airflow pour votre projet Airflow local. Pour ce faire, allez sur http://localhost:8080/ et connectez-vous avec « admin » pour votre nom d'utilisateur et votre mot de passe.
 
-Deploy Your Project to Astronomer
-=================================
-
-If you have an Astronomer account, pushing code to a Deployment on Astronomer is simple. For deploying instructions, refer to Astronomer documentation: https://docs.astronomer.io/cloud/deploy-code/
-
-Contact
-=======
-
-The Astronomer CLI is maintained with love by the Astronomer team. To report a bug or suggest a change, reach out to our support.

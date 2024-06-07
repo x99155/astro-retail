@@ -9,7 +9,9 @@ airflow-webserver.pid
 webserver_config.py
 airflow.cfg
 airflow.db
-include
+include/gcp
 plugins
 tests
+.astro
+.dockerignore
 
